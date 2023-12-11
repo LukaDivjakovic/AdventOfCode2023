@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Day1 {
-
-    public static int findIndex(String arr[], String t) {
+    public static int findIndex(String[] arr, String t) {
 
         // if array is Null
         if (arr == null) {
@@ -37,38 +37,25 @@ public class Day1 {
         BufferedReader br = new BufferedReader(new FileReader("day1/res/input.txt"));
         String line;
         String[] digits = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
-        List<Integer> Digits = new ArrayList<>();
-        int sum = 0, first = 0, last = 0;
+        List<Digit> Digits = new ArrayList<>();
+        int sum = 0;
         while ((line = br.readLine()) != null) {
-            boolean foundFirst = false;
-            boolean hasLetters = false;
             for (String digit : digits) {
                 if (line.contains(digit)) {
-                    hasLetters = true;
-                    Digits.add(findIndex(digits, digit));
+                    Digits.add(new Digit(findIndex(digits, digit), line.indexOf(digit)));
+                    if (line.lastIndexOf(digit) != line.indexOf(digit))
+                        Digits.add(new Digit(findIndex(digits, digit), line.lastIndexOf(digit)));
                 }
             }
-
             for (int i = 0; i < line.length(); i++) {
-
-                if (line.charAt(i) >= '0' && line.charAt(i) <= '9' && !foundFirst) {
-                    if (hasLetters && i < line.indexOf(digits[Digits.get(0)]))
-                        first = Integer.parseInt(String.valueOf(line.charAt(i)));
-                    else {
-                        first = Digits.get(0);
-                    }
-                    foundFirst = true;
-                }
                 if (line.charAt(i) >= '0' && line.charAt(i) <= '9') {
-                    if (hasLetters && i > line.indexOf(digits[Digits.get(Digits.size() - 1)]))
-                        last = Integer.parseInt(String.valueOf(line.charAt(i)));
-                    else {
-                        last = Digits.get(Digits.size() - 1);
-                    }
+                    Digits.add(new Digit(Integer.parseInt(String.valueOf(line.charAt(i))), i));
                 }
             }
+            Collections.sort(Digits);
 
-            sum += (10 * first + last);
+            sum += (10 * Digits.get(0).digit + Digits.get(Digits.size() - 1).digit);
+            Digits.clear();
         }
         System.out.println(sum);
     }
